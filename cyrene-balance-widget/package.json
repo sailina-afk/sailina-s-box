@@ -1,0 +1,33 @@
+{
+  "name": "dsh-cyrene-whale-widget",
+  "version": "2.0.0",
+  "description": "Cyrene Balance Widget 2.0: a resident DeepSeek balance widget with a full-screen Cyrene opening animation (4K source re-encoded to 1440p60 H.264, audio fades out with the animation) and a greeting voice that plays 2.5 s after the animation ends.",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "balance",
+    "widget",
+    "cyrene",
+    "skin",
+    "loading-screen"
+  ],
+  "type": "module",
+  "main": "lib/index.js",
+  "icon": "./icon.png",
+  "files": [
+    "lib",
+    "assets",
+    "icon.png",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh-CN.md",
+    "PROVENANCE.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "license": "MIT"
+}
