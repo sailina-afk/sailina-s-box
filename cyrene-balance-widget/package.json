@@ -3,14 +3,15 @@
   "version": "2.1.0",
   "description": "Cyrene Balance Widget 2.1: a resident DeepSeek balance widget for DSH with a full-screen Cyrene opening animation, time-aware greeting voice (morning / noon / evening plus three random greetings, mutually exclusive), 25 dialogue lines with Cyrene sticker images, and balance / spend / peak-hour pricing.",
   "keywords": [
+    "balance",
+    "cordis",
+    "cyrene",
+    "deepseek-harness",
     "dsh",
     "dsh-plugin",
-    "deepseek-harness",
-    "balance",
-    "widget",
-    "cyrene",
+    "loading-screen",
     "skin",
-    "loading-screen"
+    "widget"
   ],
   "type": "module",
   "main": "lib/index.js",
@@ -29,5 +30,15 @@
       "patch": "./cordis.patch.yml"
     }
   },
-  "license": "MIT"
+  "license": "MIT",
+  "author": "sailina-afk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sailina-afk/sailina-s-box.git",
+    "directory": "cyrene-balance-widget"
+  },
+  "homepage": "https://github.com/sailina-afk/sailina-s-box/tree/main/cyrene-balance-widget#readme",
+  "bugs": {
+    "url": "https://github.com/sailina-afk/sailina-s-box/issues"
+  }
 }
