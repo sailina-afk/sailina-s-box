@@ -8680,7 +8680,15 @@ var BUBBLE_DEFAULT_ITEMS = [
                                 }
                             ],
                             "size": 8
-                        },
+                        }
+                    ]
+                }
+            },
+            {
+                "w": 5,
+                "item": {
+                    "kind": "custom",
+                    "modules": [
                         {
                             "type": "randimg",
                             "imgs": [
@@ -8721,20 +8729,7 @@ var BUBBLE_DEFAULT_ITEMS = [
                                     "w": 5
                                 }
                             ],
-                            "imgScale": 0.6
-                        }
-                    ]
-                }
-            },
-            {
-                "w": 1,
-                "item": {
-                    "kind": "custom",
-                    "modules": [
-                        {
-                            "type": "image",
-                            "imgId": "bimg_petpet",
-                            "size": 6
+                            "imgScale": 0.9
                         }
                     ]
                 }
