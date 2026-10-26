@@ -8680,6 +8680,48 @@ var BUBBLE_DEFAULT_ITEMS = [
                                 }
                             ],
                             "size": 8
+                        },
+                        {
+                            "type": "randimg",
+                            "imgs": [
+                                {
+                                    "imgId": "bimg_meme01",
+                                    "w": 5
+                                },
+                                {
+                                    "imgId": "bimg_meme02",
+                                    "w": 5
+                                },
+                                {
+                                    "imgId": "bimg_meme03",
+                                    "w": 5
+                                },
+                                {
+                                    "imgId": "bimg_meme04",
+                                    "w": 5
+                                },
+                                {
+                                    "imgId": "bimg_meme05",
+                                    "w": 5
+                                },
+                                {
+                                    "imgId": "bimg_meme06",
+                                    "w": 5
+                                },
+                                {
+                                    "imgId": "bimg_meme07",
+                                    "w": 5
+                                },
+                                {
+                                    "imgId": "bimg_meme08",
+                                    "w": 5
+                                },
+                                {
+                                    "imgId": "bimg_meme09",
+                                    "w": 5
+                                }
+                            ],
+                            "imgScale": 0.6
                         }
                     ]
                 }
@@ -21957,8 +21999,24 @@ loadBubbleCfg()
 function cyreneGreeting() {
   var played = false
   var audio = null
+  // 分时段问候：命中时段时，按 50% 概率播该时段语音、50% 播随机问候；
+  // 空档时段只走随机。两条链路互斥——一次加载只播一条。
+  function pickGreetingName() {
+    try {
+      var h = new Date().getHours()
+      var slot = null
+      if (h >= 5 && h < 10) slot = 'morning'        // 05:00–09:59
+      else if (h >= 11 && h < 14) slot = 'noon'     // 11:00–13:59
+      else if (h >= 18 || h < 4) slot = 'evening'   // 18:00–03:59（跨午夜）
+      var pool = ['rand1', 'rand2', 'rand3']
+      var rand = pool[Math.floor(Math.random() * pool.length)]
+      if (!slot) return rand                        // 空档：只有随机
+      return Math.random() < 0.5 ? slot : rand      // 时段内：二选一，互斥
+    } catch (err) { return 'rand1' }
+  }
   try {
-    audio = new Audio('/dsh-whale/greeting.wav')
+    var greetName = pickGreetingName()
+    audio = new Audio('/dsh-whale/greeting.mp3?name=' + encodeURIComponent(greetName))
     audio.volume = 0.9
   } catch (err) { audio = null }
   function tryPlay() {

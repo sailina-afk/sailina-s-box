@@ -1,7 +1,7 @@
 {
   "name": "dsh-cyrene-whale-widget",
-  "version": "2.0.0",
-  "description": "Cyrene Balance Widget 2.0: a resident DeepSeek balance widget with a full-screen Cyrene opening animation (4K source re-encoded to 1440p60 H.264, audio fades out with the animation) and a greeting voice that plays 2.5 s after the animation ends.",
+  "version": "2.1.0",
+  "description": "Cyrene Balance Widget 2.1: a resident DeepSeek balance widget for DSH with a full-screen Cyrene opening animation, time-aware greeting voice (morning / noon / evening plus three random greetings, mutually exclusive), 25 dialogue lines with Cyrene sticker images, and balance / spend / peak-hour pricing.",
   "keywords": [
     "dsh",
     "dsh-plugin",

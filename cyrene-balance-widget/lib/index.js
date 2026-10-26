@@ -44,7 +44,7 @@ const DATA_CANDIDATES_TAIL = [
 //     因为开发版里的改动属于"将要发布的那一版"。
 //   ⚠️ BUILD_VERSION 与下面 payload 里两处 `version: '…'` 一起由 `_bump-version.mjs` 更新；
 //   ⚠️ BUILD_CHANNEL 由 `_strip-dev-paths.mjs` 在生成发布副本时改成 'release'（发布副本不带 dev 标记）。
-const BUILD_VERSION = '2.0.0'
+const BUILD_VERSION = '2.1.0'
 const BUILD_CHANNEL = 'release'
 function versionLabelOf(version, channel) {
   const s = String(version == null ? '' : version)
@@ -520,6 +520,15 @@ const BUBBLE_IMG_INDEX_NAME = 'bubble-imgs.json'
 const DEFAULT_BUBBLE_IMGS = [
   { id: 'bimg_petpet', name: '昔涟', file: 'bubble-petpet.gif', format: 'gif' },
   { id: 'bimg_money1', name: '昔涟·爱心', file: 'bubble-money1.gif', format: 'gif' },
+  { id: 'bimg_meme01', name: '乖乖听着', file: 'meme-01.png', format: 'png' },
+  { id: 'bimg_meme02', name: '俏皮眨眼', file: 'meme-02.png', format: 'png' },
+  { id: 'bimg_meme03', name: '小得意', file: 'meme-03.png', format: 'png' },
+  { id: 'bimg_meme04', name: '指点一下', file: 'meme-04.png', format: 'png' },
+  { id: 'bimg_meme05', name: '捧心', file: 'meme-05.png', format: 'png' },
+  { id: 'bimg_meme06', name: '比心', file: 'meme-06.png', format: 'png' },
+  { id: 'bimg_meme07', name: '点赞', file: 'meme-07.png', format: 'png' },
+  { id: 'bimg_meme08', name: '爱你哟', file: 'meme-08.png', format: 'png' },
+  { id: 'bimg_meme09', name: '超开心', file: 'meme-09.png', format: 'png' },
 ]
 function bubbleImgFileCandidates(file) {
   return [
@@ -3626,6 +3635,39 @@ export default {
           const bytes = fs.readFileSync(path.join(PACKAGE_ROOT, 'assets', 'greeting.wav'))
           res.writeHead(200, {
             'Content-Type': 'audio/wav',
+            'Cache-Control': 'no-store',
+            'Content-Length': String(bytes.length),
+          })
+          res.end(bytes)
+        } catch (err) {
+          res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' })
+          res.end('greeting unavailable: ' + String((err && err.message) || err))
+        }
+      },
+    }))
+
+    // —— 分时段问候语音：早/中/晚 + 三条随机，白名单映射，不会越权读文件 ——
+    disposers.push(registerRoute({
+      kind: 'exact',
+      path: '/dsh-whale/greeting.mp3',
+      handler: (req, res) => {
+        try {
+          const q = String(req.url || '').split('?')[1] || ''
+          const m = /(?:^|&)name=([a-z0-9]+)/i.exec(q)
+          const name = m ? m[1].toLowerCase() : ''
+          const allowed = {
+            morning: 'morning.mp3', noon: 'noon.mp3', evening: 'evening.mp3',
+            rand1: 'rand1.mp3', rand2: 'rand2.mp3', rand3: 'rand3.mp3',
+          }
+          const file = allowed[name]
+          if (!file) {
+            res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' })
+            res.end('unknown greeting')
+            return
+          }
+          const bytes = fs.readFileSync(path.join(PACKAGE_ROOT, 'assets', file))
+          res.writeHead(200, {
+            'Content-Type': 'audio/mpeg',
             'Cache-Control': 'no-store',
             'Content-Length': String(bytes.length),
           })

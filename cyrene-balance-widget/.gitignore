@@ -1,0 +1,3 @@
+.dsh-ops-update-*.lock
+*.bak-probe-*
+.DS_Store
