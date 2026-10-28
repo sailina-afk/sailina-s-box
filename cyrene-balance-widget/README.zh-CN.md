@@ -1,5 +1,7 @@
 # 昔涟余额挂件 2.0（带动画）
 
+[![已收录](https://raw.githubusercontent.com/2BingLing/dsh-market/master/assets/readme/badge-listed-zh.svg)](https://dsh.market/)
+
 > 中文原文备份，英文版见 `README.md`。
 
 打开客户端先播一段全屏开场动画（`assets/loading.mp4`，1440p / 60fps，约 20 MB，13.9 秒），播完淡出进入界面，

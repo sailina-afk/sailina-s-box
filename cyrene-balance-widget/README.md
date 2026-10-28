@@ -1,5 +1,7 @@
 # Cyrene Balance Widget 2.0 (Animated)
 
+[![Listed on DSH Market](https://raw.githubusercontent.com/2BingLing/dsh-market/master/assets/readme/badge-listed-en.svg)](https://dsh.market/)
+
 On client startup it plays a full-screen opening animation (`assets/loading.mp4`, 1440p / 60fps, ~20 MB, 13.9 s),
 fades out into the UI, and 2.5 seconds later plays "Cyrene's Greeting".
 
