@@ -44,7 +44,7 @@ const DATA_CANDIDATES_TAIL = [
 //     因为开发版里的改动属于"将要发布的那一版"。
 //   ⚠️ BUILD_VERSION 与下面 payload 里两处 `version: '…'` 一起由 `_bump-version.mjs` 更新；
 //   ⚠️ BUILD_CHANNEL 由 `_strip-dev-paths.mjs` 在生成发布副本时改成 'release'（发布副本不带 dev 标记）。
-const BUILD_VERSION = '2.1.0'
+const BUILD_VERSION = '2.2.0'
 const BUILD_CHANNEL = 'release'
 function versionLabelOf(version, channel) {
   const s = String(version == null ? '' : version)
@@ -742,6 +742,7 @@ const LEGACY_ROLE_RESET_TEXT =
 // CSS 里不能出现双引号（这段要当 JS 源码执行）：属性选择器写成 [class*=titlebar]，字体用 system-ui。
 const LOADING_SCRIPT = [
   '(function(){try{',
+  'try{if(localStorage.getItem("dshw-loading")==="0")return}catch(e){}',
   'if(window.__cyreneLoading)return;window.__cyreneLoading=1;',
   'var SRC="/dsh-whale/loading.mp4";',
   'var st=document.createElement("style");',

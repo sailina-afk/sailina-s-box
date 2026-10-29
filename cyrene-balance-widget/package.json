@@ -1,6 +1,6 @@
 {
   "name": "dsh-cyrene-whale-widget",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Cyrene Balance Widget 2.1: a resident DeepSeek balance widget for DSH with a full-screen Cyrene opening animation, time-aware greeting voice (morning / noon / evening plus three random greetings, mutually exclusive), 25 dialogue lines with Cyrene sticker images, and balance / spend / peak-hour pricing.",
   "keywords": [
     "balance",

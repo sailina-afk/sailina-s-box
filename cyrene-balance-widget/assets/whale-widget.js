@@ -1598,7 +1598,7 @@ function dshwCustSel(sel, opts) {
 var usageRecBtn = document.createElement('button')
 usageRecBtn.type = 'button'
 usageRecBtn.className = 'dshwv-roleimport'
-usageRecBtn.textContent = '- = 小鲸鱼记账 = -'
+usageRecBtn.textContent = '- = 昔涟记账 = -'
 usageRecBtn.title = '查看今日/近7天/全部消费记录'
 usageRecBtn.addEventListener('click', function (e) {
   e.stopPropagation()
@@ -2196,6 +2196,34 @@ var rowHide = menuRow()
 rowHide.appendChild(menuLabel('隐藏菜单按钮'))
 rowHide.appendChild(menuHideToggle)
 menuBox.appendChild(rowHide)
+// —— 开屏动画 / 问候语音 开关（2.1.1）：状态存 localStorage，注入脚本在页面早期就能读到 ——
+function cyreneFlagGet(key, def) {
+  try { var v = localStorage.getItem(key); return v === null ? def : v !== '0' } catch (e) { return def }
+}
+function cyreneFlagSet(key, on) {
+  try { localStorage.setItem(key, on ? '1' : '0') } catch (e) {}
+}
+var loadingToggle = document.createElement('input')
+loadingToggle.type = 'checkbox'
+loadingToggle.className = 'dshwv-check'
+loadingToggle.checked = cyreneFlagGet('dshw-loading', true)
+loadingToggle.title = '关闭后启动时不再播放开屏动画（下次启动生效）'
+loadingToggle.addEventListener('change', function () { cyreneFlagSet('dshw-loading', loadingToggle.checked) })
+var rowLoading = menuRow()
+rowLoading.appendChild(menuLabel('开屏动画'))
+rowLoading.appendChild(loadingToggle)
+menuBox.appendChild(rowLoading)
+
+var greetingToggle = document.createElement('input')
+greetingToggle.type = 'checkbox'
+greetingToggle.className = 'dshwv-check'
+greetingToggle.checked = cyreneFlagGet('dshw-greeting', true)
+greetingToggle.title = '关闭后启动时不再播放问候语音（早/中/晚与随机问候）'
+greetingToggle.addEventListener('change', function () { cyreneFlagSet('dshw-greeting', greetingToggle.checked) })
+var rowGreeting = menuRow()
+rowGreeting.appendChild(menuLabel('问候语音'))
+rowGreeting.appendChild(greetingToggle)
+menuBox.appendChild(rowGreeting)
 // —— Codex 本机统计开关（issue #116）：v748 起**从主菜单挪进「Codex 模型的设置子菜单」** ——
 // 主菜单不再有这一项（它对没配 Codex 模型的用户没有意义）。宿主侧同样按"有没有 Codex 模型"兜底：
 // 没配 → 默认关闭、完全不扫 ~/.codex/sessions。这里只保留一个"当前挂载的那个复选框"的引用，
@@ -2325,7 +2353,7 @@ var usageHideTimer = null
 var usageShowTimer = null
 function setUsageNavBtn(inUsage) {
   try {
-    usageRecBtn.textContent = inUsage ? '‹ 返回' : '- = 小鲸鱼记账 = -'
+    usageRecBtn.textContent = inUsage ? '‹ 返回' : '- = 昔涟记账 = -'
     usageRecBtn.title = inUsage ? '返回主菜单' : '查看今日/近7天/全部消费记录'
   } catch (err) {}
 }
@@ -3161,7 +3189,7 @@ function buildUsageSubShell() {
   // 居中小标题
   var subTitle = document.createElement('div')
   subTitle.className = 'dshwv-usage-subtitle'
-  subTitle.textContent = '- = 小鲸鱼记账 = -'
+  subTitle.textContent = '- = 昔涟记账 = -'
   usagePanel.appendChild(subTitle)
   // 预警与预算设置区(静态)
   buildUsageSettingsArea()
@@ -5158,7 +5186,7 @@ function openApiModelPanel(modelId) {
           // 只会让"层级"更难读。已删除 —— 确认框永远由 showConfirm 统一抬到 40000。
           showConfirm('✓ 保存成功：' + (nm || '新模型') + '\n已加入模型列表', function () {
             try { closeApiModelPanel() } catch (err) {}
-            // 背后的「- = 小鲸鱼记账 = -」列表同步刷新（模型行在静态区，需重建子界面）
+            // 背后的「- = 昔涟记账 = -」列表同步刷新（模型行在静态区，需重建子界面）
             refreshModelList()
           }, '确认')
           return
@@ -21992,6 +22020,7 @@ loadBubbleCfg()
 // 未交互页面可能被自动播放策略拦下，所以失败时挂一次性的 pointerdown 重试；
 // 文字问候复用挂件自己的 toast，不额外占气泡层。
 function cyreneGreeting() {
+  try { if (localStorage.getItem('dshw-greeting') === '0') return } catch (e) {}
   var played = false
   var audio = null
   // 分时段问候：命中时段时，按 50% 概率播该时段语音、50% 播随机问候；
@@ -22063,6 +22092,43 @@ function cyreneGreeting() {
   setTimeout(start, 700)
 }
 cyreneGreeting()
+
+// —— 闲置问候：连续 20 分钟没有任何键鼠/触摸操作，就弹一次气泡说话 ——
+// 文案在 IDLE_LINES 里，多条时随机抽一条；弹完重新计时（下次再闲置 20 分钟才会再弹）。
+// 用 capture + passive 监听，不干扰挂件自己的点击逻辑。
+var IDLE_MS = 20 * 60 * 1000
+var IDLE_SHOW_MS = 12000
+var IDLE_LINES = [
+  '伙伴工作的样子真辛苦呢，记得要劳逸结合哦',
+]
+var idleTimer = null
+function cyreneIdleShow() {
+  try {
+    if (!bubbleOn) return
+    if (!IDLE_LINES.length) return
+    var line = IDLE_LINES[Math.floor(Math.random() * IDLE_LINES.length)]
+    try { applyDefaultFrame() } catch (err) {}
+    sceneOpen('idle', function () {
+      bubbleRenderModules([{ type: 'text', text: line, size: 7, bold: true }])
+    }, IDLE_SHOW_MS)
+  } catch (err) {}
+}
+function cyreneIdleReset() {
+  try {
+    if (idleTimer) clearTimeout(idleTimer)
+    idleTimer = setTimeout(function () {
+      cyreneIdleShow()
+      cyreneIdleReset()
+    }, IDLE_MS)
+  } catch (err) {}
+}
+try {
+  var IDLE_EVENTS = ['mousemove', 'mousedown', 'keydown', 'wheel', 'touchstart', 'scroll']
+  for (var ii = 0; ii < IDLE_EVENTS.length; ii++) {
+    document.addEventListener(IDLE_EVENTS[ii], cyreneIdleReset, { passive: true, capture: true })
+  }
+  cyreneIdleReset()
+} catch (err) {}
 
 // v865（issue #237 后半："size 配置仅在页面加载时读一次 ⇒ 改了不生效"）——
 //   把"读 size 配置并应用"抽成可重入函数：启动读一次，之后**回到标签页 / 打开菜单**时各补一次
