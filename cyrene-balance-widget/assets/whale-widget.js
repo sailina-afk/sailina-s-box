@@ -2266,7 +2266,7 @@ try {
   for (var gi = 0; gi < GREETING_DEFS.length; gi++) {
     var gd = GREETING_DEFS[gi]
     var gLine = document.createElement('label')
-    gLine.style.cssText = 'display:flex;align-items:flex-start;gap:5px;font-size:10px;line-height:1.35;opacity:.92;cursor:pointer'
+    gLine.style.cssText = 'display:flex;align-items:flex-start;gap:5px;font-size:10px;line-height:1.35;cursor:pointer;color:#203170'
     var gCb = document.createElement('input')
     gCb.type = 'checkbox'
     gCb.className = 'dshwv-check'
@@ -2276,6 +2276,7 @@ try {
       return function () { cyreneGreetSet(nm, cb.checked) }
     })(gd.name, gCb))
     var gTx = document.createElement('span')
+    gTx.style.cssText = 'color:#203170;opacity:.9'
     gTx.textContent = gd.slot + '：' + gd.text
     gLine.appendChild(gCb)
     gLine.appendChild(gTx)
