@@ -44,7 +44,7 @@ const DATA_CANDIDATES_TAIL = [
 //     因为开发版里的改动属于"将要发布的那一版"。
 //   ⚠️ BUILD_VERSION 与下面 payload 里两处 `version: '…'` 一起由 `_bump-version.mjs` 更新；
 //   ⚠️ BUILD_CHANNEL 由 `_strip-dev-paths.mjs` 在生成发布副本时改成 'release'（发布副本不带 dev 标记）。
-const BUILD_VERSION = '2.2.0'
+const BUILD_VERSION = '2.2.1'
 const BUILD_CHANNEL = 'release'
 function versionLabelOf(version, channel) {
   const s = String(version == null ? '' : version)
@@ -3658,7 +3658,7 @@ export default {
           const name = m ? m[1].toLowerCase() : ''
           const allowed = {
             morning: 'morning.mp3', noon: 'noon.mp3', evening: 'evening.mp3',
-            rand1: 'rand1.mp3', rand2: 'rand2.mp3', rand3: 'rand3.mp3',
+            rand1: 'rand1.mp3', rand2: 'rand2.mp3', rand3: 'rand3.mp3', rand4: 'rand4.mp3',
           }
           const file = allowed[name]
           if (!file) {

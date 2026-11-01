@@ -2224,6 +2224,32 @@ var rowGreeting = menuRow()
 rowGreeting.appendChild(menuLabel('问候语音'))
 rowGreeting.appendChild(greetingToggle)
 menuBox.appendChild(rowGreeting)
+// —— 逐条勾选：把每句语音的内容列出来，取消勾选就不会被抽到 ——
+var greetListBox = document.createElement('div')
+greetListBox.className = 'dshwv-greetlist'
+greetListBox.style.cssText = 'padding:0 10px 6px;display:flex;flex-direction:column;gap:4px'
+try {
+  var enabledNow = cyreneGreetEnabled()
+  for (var gi = 0; gi < GREETING_DEFS.length; gi++) {
+    var gd = GREETING_DEFS[gi]
+    var gLine = document.createElement('label')
+    gLine.style.cssText = 'display:flex;align-items:flex-start;gap:5px;font-size:10px;line-height:1.35;opacity:.92;cursor:pointer'
+    var gCb = document.createElement('input')
+    gCb.type = 'checkbox'
+    gCb.className = 'dshwv-check'
+    gCb.style.cssText = 'margin:2px 0 0;flex:0 0 auto'
+    gCb.checked = enabledNow.indexOf(gd.name) !== -1
+    gCb.addEventListener('change', (function (nm, cb) {
+      return function () { cyreneGreetSet(nm, cb.checked) }
+    })(gd.name, gCb))
+    var gTx = document.createElement('span')
+    gTx.textContent = gd.slot + '：' + gd.text
+    gLine.appendChild(gCb)
+    gLine.appendChild(gTx)
+    greetListBox.appendChild(gLine)
+  }
+} catch (err) {}
+menuBox.appendChild(greetListBox)
 // —— Codex 本机统计开关（issue #116）：v748 起**从主菜单挪进「Codex 模型的设置子菜单」** ——
 // 主菜单不再有这一项（它对没配 Codex 模型的用户没有意义）。宿主侧同样按"有没有 Codex 模型"兜底：
 // 没配 → 默认关闭、完全不扫 ~/.codex/sessions。这里只保留一个"当前挂载的那个复选框"的引用，
@@ -22025,21 +22051,59 @@ function cyreneGreeting() {
   var audio = null
   // 分时段问候：命中时段时，按 50% 概率播该时段语音、50% 播随机问候；
   // 空档时段只走随机。两条链路互斥——一次加载只播一条。
+// —— 问候语音清单（设置面板逐条勾选，pickGreetingName 只从启用的里抽）——
+var GREETING_DEFS = [
+  { name: 'morning', slot: '早上', text: '早上好啊，伙伴，每一天都要开开心心的过呢' },
+  { name: 'noon', slot: '中午', text: '中午好啊，伙伴，吃过饭了吗，中午要好好吃饭哦' },
+  { name: 'evening', slot: '晚上', text: '晚上好啊，伙伴，又快到休息的时间了呢，希望你能做一个好梦哦' },
+  { name: 'rand1', slot: '随机', text: '伙伴，欢迎回到 DeepSeek Harness，我是你的助手，昔涟' },
+  { name: 'rand2', slot: '随机', text: '伙伴，欢迎回来，这里是昔涟，你亲爱的朋友，随时为你守候' },
+  { name: 'rand3', slot: '随机', text: '伙伴，欢迎回来，我在这里哦，今天过得怎么样啊~' },
+  { name: 'rand4', slot: '随机', text: '伙伴，你回来了，今天有没有发生什么有趣的事呢' },
+]
+function cyreneGreetAll() {
+  return GREETING_DEFS.map(function (d) { return d.name })
+}
+function cyreneGreetEnabled() {
+  try {
+    var raw = localStorage.getItem('dshw-greeting-lines')
+    if (!raw) return cyreneGreetAll()
+    var arr = JSON.parse(raw)
+    if (!Array.isArray(arr)) return cyreneGreetAll()
+    var all = cyreneGreetAll()
+    return all.filter(function (n) { return arr.indexOf(n) !== -1 })
+  } catch (e) { return cyreneGreetAll() }
+}
+function cyreneGreetSet(name, on) {
+  try {
+    var list = cyreneGreetEnabled()
+    var i = list.indexOf(name)
+    if (on && i === -1) list.push(name)
+    if (!on && i !== -1) list.splice(i, 1)
+    localStorage.setItem('dshw-greeting-lines', JSON.stringify(list))
+  } catch (e) {}
+}
+
   function pickGreetingName() {
     try {
+      var on = cyreneGreetEnabled()
+      if (!on.length) return null                   // 全部取消勾选 → 不播
       var h = new Date().getHours()
       var slot = null
       if (h >= 5 && h < 10) slot = 'morning'        // 05:00–09:59
       else if (h >= 11 && h < 14) slot = 'noon'     // 11:00–13:59
       else if (h >= 18 || h < 4) slot = 'evening'   // 18:00–03:59（跨午夜）
-      var pool = ['rand1', 'rand2', 'rand3']
-      var rand = pool[Math.floor(Math.random() * pool.length)]
-      if (!slot) return rand                        // 空档：只有随机
-      return Math.random() < 0.5 ? slot : rand      // 时段内：二选一，互斥
+      var slotOn = !!slot && on.indexOf(slot) !== -1
+      var randPool = on.filter(function (n) { return n.indexOf('rand') === 0 })
+      var rand = randPool.length ? randPool[Math.floor(Math.random() * randPool.length)] : null
+      if (!slotOn) return rand                      // 时段语音没勾 → 只走随机
+      if (!rand) return slot                        // 随机全没勾 → 只走时段
+      return Math.random() < 0.5 ? slot : rand       // 两者都在 → 二选一，互斥
     } catch (err) { return 'rand1' }
   }
   try {
     var greetName = pickGreetingName()
+    if (!greetName) return                             // 全部未勾选 → 静默
     audio = new Audio('/dsh-whale/greeting.mp3?name=' + encodeURIComponent(greetName))
     audio.volume = 0.9
   } catch (err) { audio = null }

@@ -1,6 +1,11 @@
-# Cyrene Balance Widget 2.2 (Animated)
+# Cyrene Balance Widget 2.2.1 (Animated)
 
 [![Listed on DSH Market](https://raw.githubusercontent.com/2BingLing/dsh-market/master/assets/readme/badge-listed-en.svg)](https://dsh.market/)
+
+**New in 2.2.1** — the greeting voice can now be controlled line by line: the settings panel lists every line as text
+with its own checkbox, so you can turn off any of them (or all of them). The old "帝皇权杖·铁墓" random line has been
+replaced, and there are now four random greetings instead of three.
+
 
 **New in 2.2** — settings toggles for the splash animation and the greeting voice (state kept in `localStorage`),
 an idle greeting (20 minutes without input → the widget says a line in a bubble), and the ledger button is now

@@ -2,6 +2,10 @@
 
 [![已收录](https://raw.githubusercontent.com/2BingLing/dsh-market/master/assets/readme/badge-listed-zh.svg)](https://dsh.market/)
 
+**2.2.1 新增**——问候语音可以逐条开关了：设置面板把每一句的内容以文字列出来，各自一个勾选框，想听哪条勾哪条，
+全取消则不播。原来的「帝皇权杖·铁墓」那句已删除并换成新的，随机问候从三条变成四条。
+
+
 **2.2 新增**——设置面板里加了「开屏动画」「问候语音」两个开关（状态存在 `localStorage`）；
 闲置 20 分钟无操作时，挂件会主动弹一次气泡说句话；记账按钮文案由「小鲸鱼记账」改为「昔涟记账」。
 
