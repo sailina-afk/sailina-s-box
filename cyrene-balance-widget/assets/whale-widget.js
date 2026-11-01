@@ -22100,10 +22100,20 @@ function cyreneGreeting() {
       else if (h >= 18 || h < 4) slot = 'evening'   // 18:00–03:59（跨午夜）
       var slotOn = !!slot && on.indexOf(slot) !== -1
       var randPool = on.filter(function (n) { return n.indexOf('rand') === 0 })
-      var rand = randPool.length ? randPool[Math.floor(Math.random() * randPool.length)] : null
-      if (!slotOn) return rand                      // 时段语音没勾 → 只走随机
-      if (!rand) return slot                        // 随机全没勾 → 只走时段
-      return Math.random() < 0.5 ? slot : rand       // 两者都在 → 二选一，互斥
+      // —— 防连续重复：记住上一次播的，这次从候选里剔掉 ——
+      var last = null
+      try { last = localStorage.getItem('dshw-greeting-last') } catch (e) {}
+      if (slotOn && slot === last) slotOn = false
+      var rp = randPool.filter(function (n) { return n !== last })
+      if (!rp.length) rp = randPool                 // 只剩一条时允许重复
+      var rand = rp.length ? rp[Math.floor(Math.random() * rp.length)] : null
+      var pick
+      if (!slotOn && !rand) return null
+      if (!slotOn) pick = rand                      // 时段语音没勾 → 只走随机
+      else if (!rand) pick = slot                   // 随机全没勾 → 只走时段
+      else pick = Math.random() < 0.5 ? slot : rand  // 两者都在 → 二选一，互斥
+      try { localStorage.setItem('dshw-greeting-last', pick) } catch (e) {}
+      return pick
     } catch (err) { return 'rand1' }
   }
   try {

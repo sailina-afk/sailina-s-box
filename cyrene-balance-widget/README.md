@@ -1,6 +1,8 @@
-# Cyrene Balance Widget 2.2.1 (Animated)
+# Cyrene Balance Widget 2.2.2 (Animated)
 
 [![Listed on DSH Market](https://raw.githubusercontent.com/2BingLing/dsh-market/master/assets/readme/badge-listed-en.svg)](https://dsh.market/)
+
+**New in 2.2.2** — the greeting picker now avoids repeating the line it played last time (remembered across restarts).
 
 **New in 2.2.1** — the greeting voice can now be controlled line by line: the settings panel lists every line as text
 with its own checkbox, so you can turn off any of them (or all of them). The old "帝皇权杖·铁墓" random line has been

@@ -2,6 +2,8 @@
 
 [![已收录](https://raw.githubusercontent.com/2BingLing/dsh-market/master/assets/readme/badge-listed-zh.svg)](https://dsh.market/)
 
+**2.2.2 新增**——问候语音不再连续重复：会记住上一次播的那条，下次从剩下的里抽。
+
 **2.2.1 新增**——问候语音可以逐条开关了：设置面板把每一句的内容以文字列出来，各自一个勾选框，想听哪条勾哪条，
 全取消则不播。原来的「帝皇权杖·铁墓」那句已删除并换成新的，随机问候从三条变成四条。
 
