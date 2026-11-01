@@ -31,6 +31,39 @@ function dshwIsChatRoot(r) {
     r.querySelector('[role="textbox"][aria-multiline="true"]')
   )
 }
+// —— 问候语音清单（设置面板逐条勾选，pickGreetingName 只从启用的里抽）——
+var GREETING_DEFS = [
+  { name: 'morning', slot: '早上', text: '早上好啊，伙伴，每一天都要开开心心的过呢' },
+  { name: 'noon', slot: '中午', text: '中午好啊，伙伴，吃过饭了吗，中午要好好吃饭哦' },
+  { name: 'evening', slot: '晚上', text: '晚上好啊，伙伴，又快到休息的时间了呢，希望你能做一个好梦哦' },
+  { name: 'rand1', slot: '随机', text: '伙伴，欢迎回到 DeepSeek Harness，我是你的助手，昔涟' },
+  { name: 'rand2', slot: '随机', text: '伙伴，欢迎回来，这里是昔涟，你亲爱的朋友，随时为你守候' },
+  { name: 'rand3', slot: '随机', text: '伙伴，欢迎回来，我在这里哦，今天过得怎么样啊~' },
+  { name: 'rand4', slot: '随机', text: '伙伴，你回来了，今天有没有发生什么有趣的事呢' },
+]
+function cyreneGreetAll() {
+  return GREETING_DEFS.map(function (d) { return d.name })
+}
+function cyreneGreetEnabled() {
+  try {
+    var raw = localStorage.getItem('dshw-greeting-lines')
+    if (!raw) return cyreneGreetAll()
+    var arr = JSON.parse(raw)
+    if (!Array.isArray(arr)) return cyreneGreetAll()
+    var all = cyreneGreetAll()
+    return all.filter(function (n) { return arr.indexOf(n) !== -1 })
+  } catch (e) { return cyreneGreetAll() }
+}
+function cyreneGreetSet(name, on) {
+  try {
+    var list = cyreneGreetEnabled()
+    var i = list.indexOf(name)
+    if (on && i === -1) list.push(name)
+    if (!on && i !== -1) list.splice(i, 1)
+    localStorage.setItem('dshw-greeting-lines', JSON.stringify(list))
+  } catch (e) {}
+}
+
 var dshwStarted = false
 function dshwStartOnce() {
   if (dshwStarted) return
@@ -22045,44 +22078,15 @@ loadBubbleCfg()
 // 素材：assets/greeting.wav（用户提供的「昔涟的问候.wav」，3.6s / 48kHz 立体声）。
 // 未交互页面可能被自动播放策略拦下，所以失败时挂一次性的 pointerdown 重试；
 // 文字问候复用挂件自己的 toast，不额外占气泡层。
+
+
 function cyreneGreeting() {
   try { if (localStorage.getItem('dshw-greeting') === '0') return } catch (e) {}
   var played = false
   var audio = null
   // 分时段问候：命中时段时，按 50% 概率播该时段语音、50% 播随机问候；
   // 空档时段只走随机。两条链路互斥——一次加载只播一条。
-// —— 问候语音清单（设置面板逐条勾选，pickGreetingName 只从启用的里抽）——
-var GREETING_DEFS = [
-  { name: 'morning', slot: '早上', text: '早上好啊，伙伴，每一天都要开开心心的过呢' },
-  { name: 'noon', slot: '中午', text: '中午好啊，伙伴，吃过饭了吗，中午要好好吃饭哦' },
-  { name: 'evening', slot: '晚上', text: '晚上好啊，伙伴，又快到休息的时间了呢，希望你能做一个好梦哦' },
-  { name: 'rand1', slot: '随机', text: '伙伴，欢迎回到 DeepSeek Harness，我是你的助手，昔涟' },
-  { name: 'rand2', slot: '随机', text: '伙伴，欢迎回来，这里是昔涟，你亲爱的朋友，随时为你守候' },
-  { name: 'rand3', slot: '随机', text: '伙伴，欢迎回来，我在这里哦，今天过得怎么样啊~' },
-  { name: 'rand4', slot: '随机', text: '伙伴，你回来了，今天有没有发生什么有趣的事呢' },
-]
-function cyreneGreetAll() {
-  return GREETING_DEFS.map(function (d) { return d.name })
-}
-function cyreneGreetEnabled() {
-  try {
-    var raw = localStorage.getItem('dshw-greeting-lines')
-    if (!raw) return cyreneGreetAll()
-    var arr = JSON.parse(raw)
-    if (!Array.isArray(arr)) return cyreneGreetAll()
-    var all = cyreneGreetAll()
-    return all.filter(function (n) { return arr.indexOf(n) !== -1 })
-  } catch (e) { return cyreneGreetAll() }
-}
-function cyreneGreetSet(name, on) {
-  try {
-    var list = cyreneGreetEnabled()
-    var i = list.indexOf(name)
-    if (on && i === -1) list.push(name)
-    if (!on && i !== -1) list.splice(i, 1)
-    localStorage.setItem('dshw-greeting-lines', JSON.stringify(list))
-  } catch (e) {}
-}
+
 
   function pickGreetingName() {
     try {
