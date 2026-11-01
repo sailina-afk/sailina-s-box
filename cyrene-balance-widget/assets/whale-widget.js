@@ -22164,6 +22164,7 @@ var IDLE_MS = 20 * 60 * 1000
 var IDLE_SHOW_MS = 12000
 var IDLE_LINES = [
   '伙伴工作的样子真辛苦呢，记得要劳逸结合哦',
+  '伙伴，工作的时候不要忘记补水哦，每天都要记得喝水',
 ]
 var idleTimer = null
 function cyreneIdleShow() {
