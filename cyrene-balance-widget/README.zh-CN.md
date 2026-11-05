@@ -1,6 +1,8 @@
 # 昔涟余额挂件 2.2（带动画）
 
 [![已收录](https://raw.githubusercontent.com/2BingLing/dsh-market/master/assets/readme/badge-listed-zh.svg)](https://dsh.market/)
+**2.2.3 新增**——插件自带一套圆润手写字体，可在设置面板切换「奶酪体 / 系统字体」；开屏动画新增静音开关，夜里启动不吵人；余额数字改为粉色渐变；包体从 30.8 MB 降到 17.6 MB，市场安装更容易装全。
+
 
 **2.2.2 新增**——问候语音不再连续重复：会记住上一次播的那条，下次从剩下的里抽。
 
@@ -51,3 +53,16 @@
 
 形象：用户提供的昔涟表情图；台词：`E:\昔涟.txt`；问候：`E:\直播录像与素材\昔涟的问候.wav`；
 开场动画：`E:\直播录像与素材\昔涟.mp4`；上游 `dsh-whale-widget` v0.4.2（MIT）。
+
+## 装不上怎么办
+
+DSH 插件市场是通过克隆 GitHub 仓库来安装的（`pnpm add git+...`）。网络不稳时克隆可能中断，装出来的插件会缺文件——通常表现为小人图破掉、其他功能都没有。
+
+遇到这种情况改成手动安装：
+
+1. 从 [最新 Release](https://github.com/sailina-afk/cyrene-balance-widget/releases/latest) 下载 `Cyrene-Balance-Widget-<version>-Animated.zip`
+2. 解压到任意目录
+3. DSH 里：设置 → 插件 → 安装本地插件，选中解压后的目录
+4. 完全退出客户端再启动
+
+Release 的 zip 是同一份代码，只是不带 git 历史。它是单文件下载，不会出现装一半的情况。

@@ -44,7 +44,7 @@ const DATA_CANDIDATES_TAIL = [
 //     因为开发版里的改动属于"将要发布的那一版"。
 //   ⚠️ BUILD_VERSION 与下面 payload 里两处 `version: '…'` 一起由 `_bump-version.mjs` 更新；
 //   ⚠️ BUILD_CHANNEL 由 `_strip-dev-paths.mjs` 在生成发布副本时改成 'release'（发布副本不带 dev 标记）。
-const BUILD_VERSION = '2.2.2'
+const BUILD_VERSION = '2.2.3'
 const BUILD_CHANNEL = 'release'
 function versionLabelOf(version, channel) {
   const s = String(version == null ? '' : version)
@@ -754,6 +754,7 @@ const LOADING_SCRIPT = [
   'var box=document.createElement("div");box.id="cyrene-loading";',
   'var v=document.createElement("video");v.src=SRC;v.autoplay=true;v.playsInline=true;',
   'v.setAttribute("playsinline","");v.preload="auto";',
+  'try{if(localStorage.getItem("dshw-loading-mute")==="1")v.muted=true}catch(e){}',
   'box.appendChild(v);',
   '(document.body||document.documentElement).appendChild(box);',
   'document.addEventListener("DOMContentLoaded",function(){try{',
@@ -768,11 +769,11 @@ const LOADING_SCRIPT = [
   'v.addEventListener("ended",finish);',
   'v.addEventListener("error",function(){clearTimeout(guard);finish()});',
   'v.addEventListener("timeupdate",function(){try{var d=v.duration||0;if(!d)return;',
-  'var left=d-v.currentTime;if(left<=2.2)v.volume=Math.max(0,Math.min(1,left/2.2))}catch(e){}});',
+  'if(v.muted)return;var left=d-v.currentTime;if(left<=2.2)v.volume=Math.max(0,Math.min(1,left/2.2))}catch(e){}});',
   'var p=v.play();',
   'if(p&&p.catch)p.catch(function(){try{v.muted=true;v.play().catch(function(){finish()})}catch(e){finish()}',
   'try{document.addEventListener("pointerdown",function once(){document.removeEventListener("pointerdown",once);',
-  'try{v.muted=false}catch(e){}},{once:true})}catch(e){}});',
+  'try{if(localStorage.getItem("dshw-loading-mute")!=="1")v.muted=false}catch(e){}},{once:true})}catch(e){}});',
   'setTimeout(function(){if(!done)finish()},20000);',
   '}catch(e){}})()',
 ].join('')
@@ -3628,6 +3629,45 @@ export default {
 
     // —— 昔涟问候语音：页面加载成功后前端播一次（用户素材 assets/greeting.wav）——
     //   与图片路由同样 no-store，换了音频刷新即生效。
+    // —— 昔涟字体（WOFF2 子集，GB2312 全集）：支持 Range，字体较大浏览器会分段取 ——
+    disposers.push(registerRoute({
+      kind: 'exact',
+      path: '/dsh-whale/font-cyrene.woff2',
+      handler: (req, res) => {
+        try {
+          const p = path.join(PACKAGE_ROOT, 'assets', 'font-cyrene.woff2')
+          const st = fs.statSync(p)
+          const total = st.size
+          const range = req.headers.range
+          const head = {
+            'Content-Type': 'font/woff2',
+            'Cache-Control': 'public, max-age=86400',
+            'Accept-Ranges': 'bytes',
+          }
+          if (range) {
+            const m = /bytes=(\d*)-(\d*)/.exec(String(range))
+            let start = m && m[1] ? parseInt(m[1], 10) : 0
+            let end = m && m[2] ? parseInt(m[2], 10) : total - 1
+            if (isNaN(start) || start < 0) start = 0
+            if (isNaN(end) || end >= total) end = total - 1
+            if (start > end) start = 0
+            res.writeHead(206, {
+              ...head,
+              'Content-Range': `bytes ${start}-${end}/${total}`,
+              'Content-Length': String(end - start + 1),
+            })
+            fs.createReadStream(p, { start, end }).on('error', () => { try { res.end() } catch (e) {} }).pipe(res)
+            return
+          }
+          res.writeHead(200, { ...head, 'Content-Length': String(total) })
+          fs.createReadStream(p).on('error', () => { try { res.end() } catch (e) {} }).pipe(res)
+        } catch (err) {
+          res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' })
+          res.end('font unavailable: ' + String((err && err.message) || err))
+        }
+      },
+    }))
+
     disposers.push(registerRoute({
       kind: 'exact',
       path: '/dsh-whale/greeting.wav',

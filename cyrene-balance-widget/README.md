@@ -1,6 +1,11 @@
-# Cyrene Balance Widget 2.2.2 (Animated)
+# Cyrene Balance Widget 2.2.3 (Animated)
 
 [![Listed on DSH Market](https://raw.githubusercontent.com/2BingLing/dsh-market/master/assets/readme/badge-listed-en.svg)](https://dsh.market/)
+**New in 2.2.3** — the widget now ships its own font (a rounded handwritten face) and
+can be switched between that and the system font from the settings panel. The opening
+animation gained a mute switch for quiet launches. Balance figures are drawn in a pink
+gradient instead of the old blue. Package size dropped from 30.8 MB to 17.6 MB, which
+makes market installs far less likely to arrive incomplete.
 
 **New in 2.2.2** — the greeting picker now avoids repeating the line it played last time (remembered across restarts).
 
@@ -52,3 +57,20 @@ The no-animation build lives in `../no-animation/` (package `dsh-cyrene-whale-wi
 Character: Cyrene sticker provided by the user; lines and greeting voice: user-provided;
 opening animation: user-provided 4K source, re-encoded to 1440p60 H.264;
 upstream `dsh-whale-widget` v0.4.2 (MIT, see `LICENSE` and `README.upstream.md`).
+
+## Installation troubleshooting
+
+The DSH Market installs plugins by cloning the GitHub repository with `pnpm add git+...`.
+On slow or unstable connections that clone can stop halfway, which leaves the widget
+with missing assets — typically only one broken character image shows up.
+
+If that happens, install manually instead:
+
+1. Download `Cyrene-Balance-Widget-<version>-Animated.zip` from the
+   [latest release](https://github.com/sailina-afk/cyrene-balance-widget/releases/latest)
+2. Unzip it anywhere
+3. In DSH: settings → plugins → install local plugin, pick the unzipped folder
+4. Fully quit the client and start it again
+
+The release zip is the same code, just packaged without git history. It downloads as a
+single file, so it cannot arrive half-finished.
